@@ -64,7 +64,7 @@ cap = cv2.VideoCapture(0)
 cvb = CvBridge()
 
 line_detector = SegNet(
-    model_path='./best_model.pth',
+    model_path='/home/nikita/RDR-drc_ws/src/rdr/scripts/best_model.pth',
     res=(384,288)
 )
 
@@ -186,10 +186,11 @@ def calibrate_warp_callback(self, request, response):
         rospy.loginfo('Calibration Succeeded')
 
 def main():
+    rospy.init_node('camera_processor')
 
-    pub_blue_img = rospy.Publisher('blue_feed', CompressedImage)
-    pub_yellow_img = rospy.Publisher('yellow_feed', CompressedImage)
-    pub_img_unfiltered = rospy.Publisher('unfiltered_feed', CompressedImage)
+    pub_blue_img = rospy.Publisher('blue_feed', CompressedImage, queue_size=10)
+    pub_yellow_img = rospy.Publisher('yellow_feed', CompressedImage, queue_size=10)
+    pub_img_unfiltered = rospy.Publisher('unfiltered_feed', Image, queue_size=10)
 
     refresh_params_srv = rospy.Service('refresh_params', Empty, refresh_params_callback)
     calibrate_warp_srv = rospy.Service('calibrate_warp', Empty, calibrate_warp_callback)
