@@ -54,7 +54,7 @@ import numpy as np
 import rospy
 from sensor_msgs.msg import CompressedImage, Image
 from cv_bridge import CvBridge
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, EmptyResponse
 
 yellow_hsv_vals = [25, 54, 60, 32, 255, 255]
 blue_hsv_vals = [100, 120, 85, 122, 255, 255]
@@ -131,7 +131,7 @@ def calibrateWarp():
 
             pth = th.dot(H)
             
-            calib_file_path = rospy.get_param('~warp_calib_save')
+            calib_file_path = rospy.get_param('~warp_calib_save', 'warp_calib')
             np.savez(calib_file_path, homography=pth, width=bwidth, height=bheight)
 
             return pth, bwidth, bheight
@@ -168,15 +168,18 @@ def nn_line_detect(image):
     blue_mask, yellow_mask = line_detector.detect_lines(image)
     return blue_mask, yellow_mask
 
-def refresh_params_callback(request):
+def refresh_params_callback(request, response):
+    global line_filter_mode, transmit_unfiltered, yellow_hsv_vals, blue_hsv_vals
     rospy.loginfo('Refreshing the parameters')
     line_filter_mode = rospy.get_param('line_filter_mode', line_filter_mode)
     transmit_unfiltered = rospy.get_param('transmit_unfiltered', transmit_unfiltered)
     yellow_hsv_vals = rospy.get_param('yellow_hsv_vals', yellow_hsv_vals)
     blue_hsv_vals = rospy.get_param('blue_hsv_vals', blue_hsv_vals)
+    return EmptyResponse
 
-def calibrate_warp_callback(self, request, response):
+def calibrate_warp_callback(request):
     rospy.loginfo('Request to calibrate recieved')
+    global homography, bwidth, bheight
     try:
         homography, bwidth, bheight = calibrateWarp()
     except Exception as e:
@@ -184,6 +187,7 @@ def calibrate_warp_callback(self, request, response):
         rospy.loginfo(str(e))
     else:
         rospy.loginfo('Calibration Succeeded')
+    return EmptyResponse
 
 def main():
     rospy.init_node('camera_processor')
@@ -199,7 +203,7 @@ def main():
     transmit_unfiltered = rospy.get_param('~transmit_unfiltered', True)
 
     try:
-        calib_file_path =  rospy.get_param('~warp_calib_file')
+        calib_file_path =  rospy.get_param('~warp_calib_file', 'warp_calib.npz')
         data = np.load(calib_file_path)
         homography = data['homography']
         bwidth = int(data['width'])
