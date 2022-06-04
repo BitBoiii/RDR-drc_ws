@@ -168,7 +168,7 @@ def nn_line_detect(image):
     blue_mask, yellow_mask = line_detector.detect_lines(image)
     return blue_mask, yellow_mask
 
-def refresh_params_callback(request, response):
+def refresh_params_callback(request):
     global line_filter_mode, transmit_unfiltered, yellow_hsv_vals, blue_hsv_vals
     rospy.loginfo('Refreshing the parameters')
     line_filter_mode = rospy.get_param('line_filter_mode', line_filter_mode)
@@ -199,7 +199,7 @@ def main():
     refresh_params_srv = rospy.Service('refresh_params', Empty, refresh_params_callback)
     calibrate_warp_srv = rospy.Service('calibrate_warp', Empty, calibrate_warp_callback)
 
-    line_filter_mode = rospy.get_param('~line_filter_mode', 'hsv')
+    line_filter_mode = rospy.get_param('~line_filter_mode', 'nn')
     transmit_unfiltered = rospy.get_param('~transmit_unfiltered', True)
 
     try:
