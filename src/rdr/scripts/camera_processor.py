@@ -200,7 +200,7 @@ def main():
     calibrate_warp_srv = rospy.Service('calibrate_warp', Empty, calibrate_warp_callback)
 
     line_filter_mode = rospy.get_param('~line_filter_mode', 'nn')
-    transmit_unfiltered = rospy.get_param('~transmit_unfiltered', True)
+    transmit_unfiltered = rospy.get_param('~transmit_unfiltered', False)
 
     try:
         calib_file_path =  rospy.get_param('~warp_calib_file', 'warp_calib.npz')
