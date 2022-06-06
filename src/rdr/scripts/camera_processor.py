@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import cv2
 import torch
 import segmentation_models_pytorch as smp
