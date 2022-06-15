@@ -1,53 +1,53 @@
 #!/usr/bin/env python3
 import cv2
-import torch
-import segmentation_models_pytorch as smp
-import albumentations as albu
+#import torch
+#import segmentation_models_pytorch as smp
+#import albumentations as albu
 
+#
+#class SegNet():
+#    def __init__(self, model_path, res=(384, 288), encoder='timm-mobilenetv3_small_minimal_100', encoder_weights='imagenet'):
+#        self.model = torch.load(model_path)
+#        self.res = res
+#        preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weights)
+#        self.preprocessing  = self.get_preprocessing(preprocessing_fn)
+#        pass
+#
+#    def to_tensor(self, x, **kwargs):
+#        return x.transpose(2, 0, 1).astype('float32')
+#
+#    def get_preprocessing(self, preprocessing_fn):
+#        """Construct preprocessing transform
+#        
+#        Args:
+#            preprocessing_fn (callbale): data normalization function 
+#                (can be specific for each pretrained neural network)
+#        Return:
+#            transform: albumentations.Compose
+#        
+#        """
+#        
+#        _transform = [
+#            albu.Lambda(image=preprocessing_fn),
+#            albu.Lambda(image=self.to_tensor, mask=self.to_tensor),
+#        ]
+#        return albu.Compose(_transform)
+#
+#    def detect_lines(self, image):
+#        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#        image = cv2.resize(image, self.res)
+#        # apply preprocessing
+#        sample = self.preprocessing(image=image)
+#        image = sample['image']
 
-class SegNet():
-    def __init__(self, model_path, res=(384, 288), encoder='timm-mobilenetv3_small_minimal_100', encoder_weights='imagenet'):
-        self.model = torch.load(model_path)
-        self.res = res
-        preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weights)
-        self.preprocessing  = self.get_preprocessing(preprocessing_fn)
-        pass
-
-    def to_tensor(self, x, **kwargs):
-        return x.transpose(2, 0, 1).astype('float32')
-
-    def get_preprocessing(self, preprocessing_fn):
-        """Construct preprocessing transform
-        
-        Args:
-            preprocessing_fn (callbale): data normalization function 
-                (can be specific for each pretrained neural network)
-        Return:
-            transform: albumentations.Compose
-        
-        """
-        
-        _transform = [
-            albu.Lambda(image=preprocessing_fn),
-            albu.Lambda(image=self.to_tensor, mask=self.to_tensor),
-        ]
-        return albu.Compose(_transform)
-
-    def detect_lines(self, image):
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = cv2.resize(image, self.res)
-        # apply preprocessing
-        sample = self.preprocessing(image=image)
-        image = sample['image']
-
-        x_tensor = torch.from_numpy(image).to('cuda').unsqueeze(0)
-        pr_mask = self.model.predict(x_tensor)
-        pr_mask = (pr_mask.squeeze().cpu().numpy().round())
-
-        blue_mask = pr_mask[0]
-        yellow_mask = pr_mask[1]
-        return blue_mask, yellow_mask
-
+#        x_tensor = torch.from_numpy(image).to('cuda').unsqueeze(0)
+#        pr_mask = self.model.predict(x_tensor)
+#        pr_mask = (pr_mask.squeeze().cpu().numpy().round())
+#
+#        blue_mask = pr_mask[0]
+#        yellow_mask = pr_mask[1]
+#        return blue_mask, yellow_mask
+#
 import math
 import cv2
 import numpy as np
@@ -64,10 +64,10 @@ cap = cv2.VideoCapture(0)
 
 cvb = CvBridge()
 
-line_detector = SegNet(
-    model_path='/home/nikita/RDR-drc_ws/src/rdr/scripts/best_model.pth',
-    res=(384,288)
-)
+#line_detector = SegNet(
+#    model_path='/home/nikita/RDR-drc_ws/src/rdr/scripts/best_model.pth',
+#    res=(384,288)
+#)
 
 def generateFlatCorners():
     cornersFlat = np.zeros((70, 1, 2))
@@ -165,9 +165,9 @@ def hsv_line_detect(image):
         ))
     return blue_mask, yellow_mask
     
-def nn_line_detect(image):
-    blue_mask, yellow_mask = line_detector.detect_lines(image)
-    return blue_mask, yellow_mask
+#def nn_line_detect(image):
+#    blue_mask, yellow_mask = line_detector.detect_lines(image)
+#    return blue_mask, yellow_mask
 
 def refresh_params_callback(request):
     global line_filter_mode, transmit_unfiltered, yellow_hsv_vals, blue_hsv_vals
@@ -224,8 +224,8 @@ def main():
 
                     blue_mask, yellow_mask = hsv_line_detect(image)
 
-                elif (line_filter_mode == 'nn'):
-                    blue_mask, yellow_mask = nn_line_detect(image)
+                #elif (line_filter_mode == 'nn'):
+                 #   blue_mask, yellow_mask = nn_line_detect(image)
 
                     if ('homography' in locals() or 'homography' in globals()):
                         blue_mask = cv2.warpPerspective(blue_mask, homography, (bwidth, bheight))
