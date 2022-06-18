@@ -240,7 +240,7 @@ def main():
                 if (transmit_unfiltered):
                     pub_img_unfiltered.publish(cvb.cv2_to_imgmsg(frame))
 
-                cv2.waitKey(1)
+                #cv2.waitKey(1)
         except Exception as e:
             rospy.logwarn(str(e)) 
 
