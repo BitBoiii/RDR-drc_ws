@@ -200,7 +200,7 @@ def main():
     refresh_params_srv = rospy.Service('refresh_params', Empty, refresh_params_callback)
     calibrate_warp_srv = rospy.Service('calibrate_warp', Empty, calibrate_warp_callback)
 
-    line_filter_mode = rospy.get_param('~line_filter_mode', 'nn')
+    line_filter_mode = rospy.get_param('~line_filter_mode', 'hsv')
     transmit_unfiltered = rospy.get_param('~transmit_unfiltered', False)
 
     try:
